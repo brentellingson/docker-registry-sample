@@ -1,0 +1,46 @@
+services:
+  nginx:
+    restart: always
+    image: nginx:alpine
+    ports:
+      - 5443:443
+    links:
+      - registry:registry
+    volumes:
+      - ./certs:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  registry:
+    image: registry:2
+    expose:
+      - "5000"
+    environment:
+      REGISTRY_AUTH: token
+      REGISTRY_AUTH_TOKEN_REALM: https://localhost:5443/auth
+      REGISTRY_AUTH_TOKEN_SERVICE: registry-service
+      REGISTRY_AUTH_TOKEN_ISSUER: registry-issuer
+      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /certs/auth.crt
+    volumes:
+      - ./certs:/certs
+      - registry-volume:/var/lib/registry
+  auth:
+    image: cesanta/docker_auth
+    command: "--v=2 --alsologtostderr /config/auth_config.yml"
+    expose:
+      - "5001"
+    volumes:
+      - ./certs:/certs
+      - ./auth/config.yml:/config/auth_config.yml
+  ui:
+    image: quiq/docker-registry-ui
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "nginx"
+      - "registry"
+      - "auth"
+    volumes:
+      - ./certs:/certs
+      - ./ui/config.yml:/opt/config.yml:ro
+volumes:
+  registry-volume:
+    external: true
