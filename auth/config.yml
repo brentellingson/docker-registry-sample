@@ -8,7 +8,7 @@
 #      rootcertbundle: "/certs/auth.crt"
 
 server:
-  addr: "0.0.0.0:5001"
+  addr: "0.0.0.0:5002"
 
 token:
   issuer: "registry-issuer"  # Must match issuer in the Registry config.
