@@ -13,13 +13,8 @@ services:
     image: registry:2
     expose:
       - "5000"
-    environment:
-      REGISTRY_AUTH: token
-      REGISTRY_AUTH_TOKEN_REALM: https://localhost:5443/auth
-      REGISTRY_AUTH_TOKEN_SERVICE: registry-service
-      REGISTRY_AUTH_TOKEN_ISSUER: registry-issuer
-      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /certs/auth.crt
     volumes:
+      - ./registry/config.yml:/etc/docker/registry/config.yml
       - ./certs:/certs
       - registry-volume:/var/lib/registry
   auth:
@@ -30,17 +25,6 @@ services:
     volumes:
       - ./certs:/certs
       - ./auth/config.yml:/config/auth_config.yml
-  ui:
-    image: quiq/docker-registry-ui
-    ports:
-      - "8000:8000"
-    depends_on:
-      - "nginx"
-      - "registry"
-      - "auth"
-    volumes:
-      - ./certs:/certs
-      - ./ui/config.yml:/opt/config.yml:ro
 volumes:
   registry-volume:
     external: true
