@@ -13,7 +13,7 @@ services:
     image: registry:2
     expose:
       - "5000"
-      - "5001"
+      - "9090"
     volumes:
       - ./registry/config.yml:/etc/docker/registry/config.yml
       - ./certs:/certs
