@@ -12,7 +12,7 @@ http:
   headers:
     X-Content-Type-Options: [nosniff]
   debug:
-    addr: ":5001"
+    addr: ":9090"
     prometheus:
       enabled: true
       path: /metrics

@@ -22,7 +22,7 @@ services:
     image: cesanta/docker_auth
     command: "--v=2 --alsologtostderr /config/auth_config.yml"
     expose:
-      - "5002"
+      - "5001"
     volumes:
       - ./certs:/certs
       - ./auth/config.yml:/config/auth_config.yml
