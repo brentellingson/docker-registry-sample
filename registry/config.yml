@@ -11,6 +11,11 @@ http:
   addr: :5000
   headers:
     X-Content-Type-Options: [nosniff]
+  debug:
+    addr: :9090
+    prometheus:
+      enabled: true
+      path: /metrics
 health:
   storagedriver:
     enabled: true
