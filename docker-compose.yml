@@ -1,6 +1,6 @@
 services:
   nginx:
-    restart: always
+    restart: unless-stopped
     image: nginx:alpine
     ports:
       - 5443:443
@@ -11,6 +11,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
   registry:
     image: registry:2
+    restart: unless-stopped
     expose:
       - "5000"
       - "9090"
@@ -20,14 +21,32 @@ services:
       - registry-volume:/var/lib/registry
   auth:
     image: cesanta/docker_auth
+    restart: unless-stopped
     command: "--v=2 --alsologtostderr /config/auth_config.yml"
     expose:
       - "5001"
     volumes:
       - ./certs:/certs
       - ./auth/config.yml:/config/auth_config.yml
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: unless-stopped
+    expose:
+      - "9100"
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    expose:
+      - "8080"
   prometheus:
     image: prom/prometheus
+    restart: unless-stopped
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --web.route-prefix=/
@@ -36,6 +55,14 @@ services:
       - "9090"
     volumes:
       - ./prometheus:/etc/prometheus
+  grafana:
+    image: grafana/grafana-oss:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana 
 volumes:
   registry-volume:
     external: true
+  grafana-storage: {}
